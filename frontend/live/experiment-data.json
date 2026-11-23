@@ -1,0 +1,80 @@
+{
+  "separation": {
+    "overall": {
+      "samples": 300,
+      "bit_count": 9369600,
+      "input_ber": 0.1972723488729508,
+      "output_ber": 0.04725495218579235,
+      "mean_mse_db": -10.724149373352628
+    },
+    "groups": [
+      {
+        "soi_type": "OFDMQPSK",
+        "interference": "CommSignal2",
+        "samples": 50,
+        "input_ber": 0.3011610630580357,
+        "output_ber": 0.1031982421875,
+        "mean_mse_db": -5.355795644415552
+      },
+      {
+        "soi_type": "OFDMQPSK",
+        "interference": "CommSignal5G1",
+        "samples": 50,
+        "input_ber": 0.12959647042410713,
+        "output_ber": 0.032863071986607144,
+        "mean_mse_db": -10.330006543569393
+      },
+      {
+        "soi_type": "OFDMQPSK",
+        "interference": "EMISignal1",
+        "samples": 50,
+        "input_ber": 0.14565708705357142,
+        "output_ber": 0.016415318080357143,
+        "mean_mse_db": -12.666211893975163
+      },
+      {
+        "soi_type": "QPSK",
+        "interference": "CommSignal2",
+        "samples": 50,
+        "input_ber": 0.1761640625,
+        "output_ber": 0.0194296875,
+        "mean_mse_db": -12.17398495262888
+      },
+      {
+        "soi_type": "QPSK",
+        "interference": "CommSignal5G1",
+        "samples": 50,
+        "input_ber": 0.26874609375,
+        "output_ber": 0.001953125,
+        "mean_mse_db": -21.049120450648388
+      },
+      {
+        "soi_type": "QPSK",
+        "interference": "EMISignal1",
+        "samples": 50,
+        "input_ber": 0.3194140625,
+        "output_ber": 0.00041015625,
+        "mean_mse_db": -29.136493270711735
+      }
+    ]
+  },
+  "spectrum": {
+    "sample_count": 100,
+    "counts": {
+      "gt": 404,
+      "tp": 377,
+      "fp": 34,
+      "fn": 27,
+      "matched_classified": 377,
+      "family_correct": 328
+    },
+    "detection_precision": 0.9172749391727494,
+    "detection_recall": 0.9331683168316832,
+    "matched_family_accuracy": 0.870026525198939,
+    "detection_map50": 0.969020805389409,
+    "confidence_threshold": 0.25,
+    "matching_iou": 0.5,
+    "map_confidence_threshold": 0.001,
+    "map_nms_iou": 0.7
+  }
+}

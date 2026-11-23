@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f8fe">
+  <title>射频信号智能分析与恢复演示系统</title>
+  <link rel="stylesheet" href="styles.css?v=20261115-10">
+  <script src="app.js?v=20261115-12" defer></script>
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-symbol" aria-hidden="true"><svg viewBox="0 0 40 40" fill="none"><path d="M4 20h7l4-9 8 18 5-12 3 3h5" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div><h1>射频信号智能分析与恢复演示系统</h1><p class="brand-sub">信号分离与恢复 · 频谱检测与调制识别</p></div>
+      </div>
+      <div class="header-actions">
+        <button id="reset" class="reset-button" type="button" title="刷新页面状态">↻ <span>刷新</span></button>
+        <div class="system-badge"><span class="badge-dot"></span>云端协同工作台</div>
+      </div>
+    </header>
+
+    <nav class="primary-tabs" aria-label="选择处理任务">
+      <button id="tab-sep" class="task-tab active" type="button" aria-controls="sep" aria-selected="true"><span>01</span>混合信号分离与恢复</button>
+      <button id="tab-spec" class="task-tab" type="button" aria-controls="spec" aria-selected="false"><span>02</span>频谱检测与调制识别</button>
+    </nav>
+
+    <main>
+      <article id="sep">
+        <section class="intro-panel panel">
+          <div class="intro-copy"><div class="eyebrow">任务一 · WAVENET</div><h2>从混合信号中恢复目标通信信号</h2><p>选择目标信号和干扰类型，使用云侧下发的模型恢复目标波形，并通过误码率与均方误差查看恢复效果。</p></div>
+          <div class="intro-facts" aria-label="任务概览"><div><strong>2</strong><span>目标信号类型</span></div><div><strong>3</strong><span>干扰类型</span></div><div><strong>300</strong><span>测试样本</span></div></div>
+        </section>
+        <section class="controls-panel panel" aria-label="信号分离样本选择">
+          <label>目标信号<select id="soi"><option>QPSK</option><option value="OFDMQPSK">OFDM-QPSK</option></select></label>
+          <label>干扰类型<select id="interference"><option>CommSignal2</option><option>CommSignal5G1</option><option>EMISignal1</option></select></label>
+          <label>测试样本<select id="sep-sample"></select></label>
+          <div class="control-note"><span>当前样本信息</span><strong id="sep-meta">正在加载样本…</strong></div>
+        </section>
+        <section class="experiment panel" aria-labelledby="sep-experiment-title">
+          <div class="experiment-header"><div><span class="eyebrow">EXPERIMENT RESULTS</span><h3 id="sep-experiment-title">样本库整体表现</h3><p>我们的模型 · 六组各 50 条样本 · 共 300 条</p></div><span class="experiment-badge">模型实验</span></div>
+          <div class="experiment-metrics" id="sep-experiment-metrics"><p class="experiment-loading">正在加载实验结果…</p></div>
+          <div class="experiment-subheading"><div><h4>各类别恢复效果</h4><p>每组 50 条 · 比较分离前后的误码率</p></div><div class="chart-legend"><span><i class="legend-input"></i>输入 BER</span><span><i class="legend-output"></i>恢复后 BER</span></div></div>
+          <div id="sep-experiment-groups" class="experiment-groups"></div>
+          <p class="experiment-footnote">总体 BER 按全部比特统计；各组 MSE 为先求线性平均、再转换为 dB。本区域展示已完成的整体实验，与下方实时任务分开。</p>
+        </section>
+      </article>
+      <article id="spec" hidden>
+        <section class="intro-panel panel">
+          <div class="intro-copy"><div class="eyebrow">任务二 · YOLO11N + XCIT</div><h2>从宽带频谱中定位并识别多个信号</h2><p>从宽带 IQ 构造时频图，检测信号位置并提取目标片段，再识别各目标的调制类型。</p></div>
+          <div class="intro-facts" aria-label="任务概览"><div><strong>10 MHz</strong><span>采样率</span></div><div><strong>100</strong><span>测试样本</span></div></div>
+        </section>
+        <section class="controls-panel panel" aria-label="频谱样本选择">
+          <label class="wide-control">测试样本<select id="spec-sample"></select></label>
+          <div class="control-note"><span>输入数据</span><strong>宽带复数 IQ · 262,144 点</strong></div>
+          <div class="control-note"><span>信号来源</span><strong>TorchSig 测试样本</strong></div>
+        </section>
+        <section class="experiment panel" aria-labelledby="spectrum-experiment-title">
+          <div class="experiment-header"><div><span class="eyebrow">EXPERIMENT RESULTS</span><h3 id="spectrum-experiment-title">样本库整体表现</h3><p>我们的模型 · 100 条宽带样本</p></div><span class="experiment-badge">模型实验</span></div>
+          <div class="experiment-metrics" id="spectrum-experiment-metrics"><p class="experiment-loading">正在加载实验结果…</p></div>
+          <div class="spectrum-experiment-detail"><div><span>真实目标</span><strong id="spectrum-gt">—</strong></div><div><span>匹配目标</span><strong id="spectrum-matched">—</strong></div><div><span>家族分类正确</span><strong id="spectrum-family-correct">—</strong></div></div>
+          <p class="experiment-footnote">检测精确率与召回率使用置信度 0.25、IoU 0.5；家族准确率仅统计匹配且成功分类的目标。本区域展示已完成的整体实验，与下方实时任务分开。</p>
+        </section>
+      </article>
+
+      <section class="cloud-panel panel" aria-labelledby="cloud-heading">
+        <div class="panel-heading cloud-heading">
+          <div><span class="eyebrow">CLOUD → EDGE</span><h3 id="cloud-heading">云边协同处理</h3><p>向云侧发起请求，接收本次下发的模型并处理所选样本。</p></div>
+          <div class="cloud-actions"><button id="clear-models" class="button button-quiet" type="button">清理本任务模型</button><button id="cancel" class="button button-quiet" type="button" hidden>停止本机任务</button><button id="send" class="button button-primary" type="button">发起请求 <span aria-hidden="true">→</span></button></div>
+        </div>
+        <div class="status-grid">
+          <div class="status-item"><span>当前样本</span><strong id="sample">—</strong></div>
+          <div class="status-item"><span>云侧模型</span><strong id="model">等待选择</strong></div>
+          <div class="status-item"><span>当前状态</span><strong id="status" role="status" aria-live="polite">等待发送</strong></div>
+        </div>
+        <div class="transfer"><div class="transfer-label"><span>模型接收进度</span><strong id="pct">0%</strong></div><progress id="progress" max="100" value="0" aria-label="模型接收进度"></progress><p id="task-id" class="task-id"></p></div>
+      </section>
+
+      <section class="output-section" aria-labelledby="output-heading">
+        <div class="section-heading"><div><h3 id="output-heading">样本处理结果</h3><p>展示本次云侧模型在端侧处理所选样本的结果</p></div><span class="outline-tag">实时任务</span></div>
+        <div id="result-empty" class="empty-result panel"><div class="empty-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="6" y="8" width="36" height="30" rx="5" stroke="currentColor" stroke-width="2"/><path d="M12 28h5l4-10 6 15 4-9h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><strong>等待处理结果</strong><p>选择样本并发起请求，模型下发并完成推理后将在这里展示结果。</p></div>
+        <div id="result" class="result-layout" hidden>
+          <article class="visual-panel panel"><div class="panel-heading"><div><h4>信号可视化</h4><p>本次模型处理结果</p></div></div><div id="result-modes" class="chips display-switch"></div><div class="image-frame"><img id="image" alt="本次推理结果"></div></article>
+          <aside class="result-panel panel"><div class="panel-heading"><div><h4>本次样本结果</h4><p>根据云侧下发模型计算</p></div><span class="small-ghost">端侧推理</span></div><div id="summary" class="summary"></div><div id="targets" class="chips target-chips"></div><div id="target-detail" class="target-detail"></div></aside>
+        </div>
+      </section>
+    </main>
+    <footer class="page-footer"><span>RF-SepEdge · 射频信号处理端侧</span><span>WaveNet · YOLO11n · XCiT</span></footer>
+  </div>
+</body>
+</html>

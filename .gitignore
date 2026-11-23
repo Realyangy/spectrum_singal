@@ -1,0 +1,22 @@
+# Python cache and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# Datasets and generated run artifacts
+/spectrum-recognition/sample-library/
+/spectrum-separation/sample-library/
+/spectrum-recognition/interactions/
+/spectrum-separation/interactions/
+/spectrum-separation/dataset/
+/frontend/runs/
+/received-models/
+/all_results/logs/
+/all_results/separation/predictions/
+/all_results/separation/per_sample.jsonl
+/all_results/separation/predictions.jsonl
+/all_results/spectrum/per_sample.jsonl

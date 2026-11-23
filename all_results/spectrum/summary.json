@@ -1,0 +1,304 @@
+{
+  "sample_count": 100,
+  "seed": 20261111,
+  "model_type": "original weights",
+  "yolo_model": "/data/cloud-edge/RF-SepEdge/spectrum-analysis/models/yolo11n_wideband_v1.0.0.pt",
+  "xcit_model": "/data/cloud-edge/RF-SepEdge/spectrum-analysis/models/finetuned/xcit_wideband_adapted.ckpt",
+  "device": "NVIDIA GeForce RTX 5090 D",
+  "confidence_threshold": 0.25,
+  "matching_iou": 0.5,
+  "counts": {
+    "gt": 404,
+    "predictions": 411,
+    "tp": 377,
+    "fp": 34,
+    "fn": 27,
+    "matched_classified": 377,
+    "fine_top5_correct": 321,
+    "family_correct": 328,
+    "fine_top1_correct": 156
+  },
+  "detection_precision": 0.9172749391727494,
+  "detection_recall": 0.9331683168316832,
+  "matched_fine_top1_accuracy": 0.41379310344827586,
+  "matched_fine_top5_accuracy": 0.8514588859416445,
+  "matched_family_accuracy": 0.870026525198939,
+  "end_to_end_fine_top1_recall": 0.38613861386138615,
+  "end_to_end_family_recall": 0.8118811881188119,
+  "per_class": {
+    "1024qam": {
+      "gt": 2,
+      "matched_classified": 2,
+      "fine_top1_correct": 1
+    },
+    "128qam_cross": {
+      "gt": 6,
+      "matched_classified": 6,
+      "fine_top1_correct": 1
+    },
+    "16ask": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 1
+    },
+    "16fsk": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 6
+    },
+    "16gfsk": {
+      "gt": 3,
+      "matched_classified": 2
+    },
+    "16gmsk": {
+      "gt": 4,
+      "matched_classified": 3,
+      "fine_top1_correct": 1
+    },
+    "16msk": {
+      "gt": 6,
+      "matched_classified": 5,
+      "fine_top1_correct": 3
+    },
+    "16psk": {
+      "gt": 10,
+      "matched_classified": 10
+    },
+    "16qam": {
+      "gt": 5,
+      "matched_classified": 5,
+      "fine_top1_correct": 3
+    },
+    "256qam": {
+      "gt": 6,
+      "matched_classified": 6
+    },
+    "2fsk": {
+      "gt": 15,
+      "matched_classified": 14,
+      "fine_top1_correct": 11
+    },
+    "2gfsk": {
+      "gt": 10,
+      "matched_classified": 7,
+      "fine_top1_correct": 2
+    },
+    "2gmsk": {
+      "gt": 9,
+      "matched_classified": 8,
+      "fine_top1_correct": 6
+    },
+    "2msk": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 5
+    },
+    "32ask": {
+      "gt": 9,
+      "matched_classified": 9
+    },
+    "32psk": {
+      "gt": 13,
+      "matched_classified": 13,
+      "fine_top1_correct": 4
+    },
+    "32qam": {
+      "gt": 6,
+      "matched_classified": 6,
+      "fine_top1_correct": 2
+    },
+    "32qam_cross": {
+      "gt": 10,
+      "matched_classified": 10,
+      "fine_top1_correct": 6
+    },
+    "4ask": {
+      "gt": 9,
+      "matched_classified": 9,
+      "fine_top1_correct": 9
+    },
+    "4fsk": {
+      "gt": 9,
+      "matched_classified": 9,
+      "fine_top1_correct": 7
+    },
+    "4gfsk": {
+      "gt": 8,
+      "matched_classified": 7,
+      "fine_top1_correct": 2
+    },
+    "4gmsk": {
+      "gt": 11,
+      "matched_classified": 8,
+      "fine_top1_correct": 8
+    },
+    "4msk": {
+      "gt": 6,
+      "matched_classified": 6,
+      "fine_top1_correct": 6
+    },
+    "512qam_cross": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 1
+    },
+    "64ask": {
+      "gt": 12,
+      "matched_classified": 12,
+      "fine_top1_correct": 5
+    },
+    "64psk": {
+      "gt": 8,
+      "matched_classified": 8
+    },
+    "64qam": {
+      "gt": 2,
+      "matched_classified": 2,
+      "fine_top1_correct": 1
+    },
+    "8ask": {
+      "gt": 4,
+      "matched_classified": 4,
+      "fine_top1_correct": 3
+    },
+    "8fsk": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 6
+    },
+    "8gfsk": {
+      "gt": 11,
+      "matched_classified": 9,
+      "fine_top1_correct": 2
+    },
+    "8gmsk": {
+      "gt": 3,
+      "matched_classified": 3,
+      "fine_top1_correct": 3
+    },
+    "8msk": {
+      "gt": 8,
+      "matched_classified": 8,
+      "fine_top1_correct": 7
+    },
+    "8psk": {
+      "gt": 6,
+      "matched_classified": 6,
+      "fine_top1_correct": 1
+    },
+    "am-dsb": {
+      "gt": 10,
+      "matched_classified": 10,
+      "fine_top1_correct": 5
+    },
+    "am-dsb-sc": {
+      "gt": 7,
+      "matched_classified": 7,
+      "fine_top1_correct": 7
+    },
+    "am-lsb": {
+      "gt": 6,
+      "matched_classified": 6
+    },
+    "am-usb": {
+      "gt": 12,
+      "matched_classified": 12,
+      "fine_top1_correct": 8
+    },
+    "bpsk": {
+      "gt": 2,
+      "matched_classified": 2,
+      "fine_top1_correct": 2
+    },
+    "chirpss": {
+      "gt": 4,
+      "matched_classified": 4,
+      "fine_top1_correct": 1
+    },
+    "fm": {
+      "gt": 5,
+      "matched_classified": 5,
+      "fine_top1_correct": 4
+    },
+    "lfm-data": {
+      "gt": 5,
+      "matched_classified": 5,
+      "fine_top1_correct": 1
+    },
+    "lfm-radar": {
+      "gt": 4,
+      "matched_classified": 2,
+      "fine_top1_correct": 2
+    },
+    "ofdm-1024": {
+      "gt": 6,
+      "matched_classified": 6
+    },
+    "ofdm-1200": {
+      "gt": 4,
+      "matched_classified": 4,
+      "fine_top1_correct": 2
+    },
+    "ofdm-128": {
+      "gt": 5,
+      "matched_classified": 3,
+      "fine_top1_correct": 1
+    },
+    "ofdm-180": {
+      "gt": 11,
+      "matched_classified": 10,
+      "fine_top1_correct": 2
+    },
+    "ofdm-2048": {
+      "gt": 7,
+      "matched_classified": 7
+    },
+    "ofdm-256": {
+      "gt": 7,
+      "matched_classified": 6,
+      "fine_top1_correct": 1
+    },
+    "ofdm-300": {
+      "gt": 5,
+      "matched_classified": 3
+    },
+    "ofdm-512": {
+      "gt": 6,
+      "matched_classified": 6
+    },
+    "ofdm-600": {
+      "gt": 7,
+      "matched_classified": 7
+    },
+    "ofdm-64": {
+      "gt": 5,
+      "matched_classified": 5
+    },
+    "ofdm-72": {
+      "gt": 6,
+      "matched_classified": 6
+    },
+    "ofdm-900": {
+      "gt": 8,
+      "matched_classified": 8
+    },
+    "ook": {
+      "gt": 9,
+      "matched_classified": 5,
+      "fine_top1_correct": 5
+    },
+    "qpsk": {
+      "gt": 11,
+      "matched_classified": 11,
+      "fine_top1_correct": 2
+    },
+    "tone": {
+      "gt": 6,
+      "matched_classified": 5
+    }
+  },
+  "detection_map50": 0.969020805389409,
+  "detection_map50_95": 0.8488696101702781,
+  "map_confidence_threshold": 0.001,
+  "map_nms_iou": 0.7
+}

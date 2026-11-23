@@ -119,7 +119,7 @@ def main():
         stem = "TestSet1Example_testmixture_{}_{}".format(soi, interference)
         mix_path = source / "dataset" / (stem + ".npy")
         truth_path = source / "dataset" / "GroundTruth_TestSet1Example_Dataset_{}_{}.pkl".format(soi, interference)
-        ckpt_path = root / "pretrained-models" / "WaveNet" / "dataset_{}_{}_mixture_wavenet".format(soi.lower(), interference.lower()) / "weights.pt"
+        ckpt_path = root / "pretrained-models" / "wavenet_{}_{}.pt".format(soi.lower(), interference.lower())
         for path in (mix_path, truth_path, ckpt_path):
             if not path.is_file():
                 raise FileNotFoundError(str(path))

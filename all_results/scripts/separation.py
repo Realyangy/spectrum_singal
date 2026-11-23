@@ -25,7 +25,7 @@ if not torch.cuda.is_available():
 count = 0
 with (OUT / "predictions.jsonl").open("w", encoding="utf-8") as stream:
     for (soi, interference), members in sorted(groups.items()):
-        model_path = SEP / "pretrained-models/WaveNet" / f"dataset_{soi.lower()}_{interference.lower()}_mixture_wavenet" / "weights.pt"
+        model_path = SEP / "pretrained-models" / f"wavenet_{soi.lower()}_{interference.lower()}.pt"
         from wavenet_model.checkpoint import load_legacy_checkpoint
         checkpoint = load_legacy_checkpoint(model_path)
         model = Wave(cfg)

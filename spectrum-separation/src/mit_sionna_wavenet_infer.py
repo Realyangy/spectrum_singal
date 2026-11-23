@@ -70,8 +70,8 @@ def main():
     root = args.root.resolve()
     source = (args.source if args.source.is_absolute() else root / args.source).resolve()
     out = (args.out if args.out.is_absolute() else root / args.out).resolve()
-    src_dir = root / "rfchallenge"
-    config_file = src_dir / "src/configs/wavenet.yml"
+    src_dir = root / "src"
+    config_file = src_dir / "wavenet_model/configs/wavenet.yml"
     manifest_file = source / "summary.json"
     if not config_file.is_file() or not manifest_file.is_file():
         raise FileNotFoundError("Expected config and Sionna summary.json; check paths: {} {}".format(config_file, manifest_file))
@@ -93,8 +93,8 @@ def main():
     import torch
     from omegaconf import OmegaConf
     sys.path.insert(0, str(src_dir))
-    from src.torchwavenet import Wave
-    from src.config_torchwavenet import ModelConfig
+    from wavenet_model.torchwavenet import Wave
+    from wavenet_model.config_torchwavenet import ModelConfig
 
     raw_model_cfg = OmegaConf.load(str(config_file))
     cfg = ModelConfig(**OmegaConf.to_container(raw_model_cfg.model, resolve=True))
@@ -143,7 +143,8 @@ def main():
 
         net = Wave(cfg)
         # Official MIT checkpoints contain OmegaConf objects. Only use trusted files.
-        ckpt = torch.load(str(ckpt_path), map_location="cpu", weights_only=False)
+        from wavenet_model.checkpoint import load_legacy_checkpoint
+        ckpt = load_legacy_checkpoint(ckpt_path)
         net.load_state_dict(ckpt["model"], strict=True)
         del ckpt
         net.to(device).eval()

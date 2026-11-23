@@ -24,7 +24,8 @@ spectrum-signal-edge/
 │   ├── sample-library/            # 任务一样本及真值
 │   ├── interactions/              # 任务一运行记录与结果
 │   ├── pretrained-models/         # WaveNet 原始权重
-│   ├── rfchallenge/               # WaveNet 模型代码
+│   ├── src/wavenet_model/         # WaveNet 模型和配置
+│   ├── src/rfcutils/              # 信号生成和解调工具
 │   └── src/                       # 信号分离相关代码
 ├── spectrum-recognition/
 │   ├── sample-library/            # 任务二样本和标注

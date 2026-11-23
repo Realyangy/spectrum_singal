@@ -79,7 +79,7 @@ def main():
     source = (args.source if args.source.is_absolute() else root / args.source).resolve()
     predicted = (args.predictions if args.predictions.is_absolute() else root / args.predictions).resolve()
     out = (args.out if args.out.is_absolute() else root / args.out).resolve()
-    official = root / 'rfchallenge'
+    official = root / 'src'
     manifest_path = source / 'summary.json'
     inference_summary_path = predicted / 'summary.json'
     for f in [manifest_path, inference_summary_path, official / 'rfcutils/__init__.py']:

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Safe small-scale runner of MIT RF Challenge 0.2.0 ORIGINAL Sionna generator.
 
-Run from signal-separation/ with rfchallenge/ and dataset/ available.
+Run from spectrum-separation/ with src/ and dataset/ available.
 
 Uses official rfcutils and sampletest_testmixture_generator.py unchanged.
 Only overrides the number of generated records, SINR grid, and output folder.
@@ -50,7 +50,7 @@ def main() -> None:
         raise ValueError('Unknown interference type')
 
     root = args.root.resolve()
-    official = root / 'rfchallenge'
+    official = root / 'src'
     raw_frame = root / 'dataset' / 'testset1_frame' / f'{args.interference}_test1_raw_data.h5'
     gen_file = official / 'sampletest_testmixture_generator.py'
     for label, path in [('official generator', gen_file), ('interference HDF5', raw_frame)]:

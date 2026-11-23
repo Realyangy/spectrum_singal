@@ -9,7 +9,7 @@
 - `src/mit_sionna_wavenet_infer.py`：读取指定实验数据与原始 WaveNet 权重，批量推理。
 - `src/mit_sionna_official_ber.py`：使用 Sionna 解调并逐样本计算 BER 和波形误差。
 - `src/summarize_sinr.py`：汇总 BER 及 MSE 的分档结果。
-- `rfchallenge/`：MIT 原始信号处理及 WaveNet 模型代码；`dataset/` 是原始干扰数据，`pretrained-models/` 为原模型。
+- `src/wavenet_model/`：WaveNet 结构及配置；`src/rfcutils/`：信号生成与解调工具；`pretrained-models/` 为原始模型权重。
 - `sample-library/`：演示样本、真值、WaveNet 输入和索引；`interactions/`：每次真实交互的输入和结果。
 - `output/`：保留三个有效干扰的源实验数据和历史汇总；可重新计算的中间推理数据不作为当前运行依赖。
 

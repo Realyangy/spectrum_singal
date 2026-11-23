@@ -22,10 +22,10 @@ def state_for(path, source_name):
 
 def separation(sample, model, output):
     from omegaconf import OmegaConf
-    sys.path.insert(0, str(root / 'spectrum-separation' / 'rfchallenge'))
-    from src.torchwavenet import Wave
-    from src.config_torchwavenet import ModelConfig
-    config = OmegaConf.load(root / 'spectrum-separation/rfchallenge/src/configs/wavenet.yml')
+    sys.path.insert(0, str(root / 'spectrum-separation' / 'src'))
+    from wavenet_model.torchwavenet import Wave
+    from wavenet_model.config_torchwavenet import ModelConfig
+    config = OmegaConf.load(root / 'spectrum-separation/src/wavenet_model/configs/wavenet.yml')
     net = Wave(ModelConfig(**OmegaConf.to_container(config.model, resolve=True)))
     net.load_state_dict(state_for(model, 'weights.pt'), strict=True)
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

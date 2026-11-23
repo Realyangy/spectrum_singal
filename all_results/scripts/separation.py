@@ -6,10 +6,10 @@ from omegaconf import OmegaConf
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT = Path(__file__).resolve().parent / "separation"
-SEP = ROOT / "signal-separation"
-sys.path.insert(0, str(SEP / "rfchallenge"))
-from src.torchwavenet import Wave
-from src.config_torchwavenet import ModelConfig
+SEP = ROOT / "spectrum-separation"
+sys.path.insert(0, str(SEP / "src"))
+from wavenet_model.torchwavenet import Wave
+from wavenet_model.config_torchwavenet import ModelConfig
 
 library = SEP / "sample-library"
 manifest = json.loads((library / "manifest.json").read_text(encoding="utf-8"))
@@ -19,14 +19,15 @@ for row in rows:
     groups[(row["soi_type"], row["interference"])].append(row)
 predictions = OUT / "predictions"
 predictions.mkdir(parents=True)
-cfg = ModelConfig(**OmegaConf.to_container(OmegaConf.load(SEP / "rfchallenge/src/configs/wavenet.yml").model, resolve=True))
+cfg = ModelConfig(**OmegaConf.to_container(OmegaConf.load(SEP / "src/wavenet_model/configs/wavenet.yml").model, resolve=True))
 if not torch.cuda.is_available():
     raise RuntimeError("CUDA is unavailable in rf-spectrum")
 count = 0
 with (OUT / "predictions.jsonl").open("w", encoding="utf-8") as stream:
     for (soi, interference), members in sorted(groups.items()):
         model_path = SEP / "pretrained-models/WaveNet" / f"dataset_{soi.lower()}_{interference.lower()}_mixture_wavenet" / "weights.pt"
-        checkpoint = torch.load(model_path, map_location="cpu", weights_only=False)
+        from wavenet_model.checkpoint import load_legacy_checkpoint
+        checkpoint = load_legacy_checkpoint(model_path)
         model = Wave(cfg)
         model.load_state_dict(checkpoint["model"], strict=True)
         del checkpoint

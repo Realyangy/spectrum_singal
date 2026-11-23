@@ -10,7 +10,7 @@ import numpy as np
 import tensorflow as tf
 
 root = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(root / 'spectrum-separation' / 'rfchallenge'))
+sys.path.insert(0, str(root / 'spectrum-separation' / 'src'))
 import rfcutils
 
 def calculate(soi, mixed_path, prediction_path, truth_path):

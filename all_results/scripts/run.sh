@@ -8,7 +8,7 @@ export MPLBACKEND=Agg
 export YOLO_CONFIG_DIR="$DIR/yolo_config"
 export PYTHONDONTWRITEBYTECODE=1
 printf 'running\n' > "$DIR/status.txt"
-"$PY_SPECTRUM" -u "$DIR/spectrum.py" > "$DIR/spectrum.log" 2>&1 &
+"$PY_SPECTRUM" -u "$DIR/recognition.py" > "$DIR/recognition.log" 2>&1 &
 SPECTRUM_PID=$!
 if "$PY_SPECTRUM" -u "$DIR/separation.py" > "$DIR/separation.log" 2>&1; then
     if "$PY_SIONNA" -u "$DIR/separation_ber.py" >> "$DIR/separation.log" 2>&1; then SEP_STATUS=0; else SEP_STATUS=$?; fi

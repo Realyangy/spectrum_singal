@@ -8,7 +8,7 @@ from ultralytics import YOLO
 
 ROOT = Path(__file__).resolve().parents[2]
 SPEC = ROOT / "spectrum-recognition"
-OUT = Path(__file__).resolve().parent / "spectrum"
+OUT = Path(__file__).resolve().parent / "recognition"
 sys.path.insert(0, str(SPEC / "src"))
 from xcit_model import XCiTClassifier
 from yolo_xcit_pipeline import extract_iq, classify_iq, signal_family

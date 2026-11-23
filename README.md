@@ -1,174 +1,113 @@
-# RF-SepEdge 频谱信号端侧
+# 频谱信号端侧
 
-## 一、系统功能
+本项目提供两个端侧任务：
 
-端侧包含两个任务：
+- **信号分离与恢复**：使用 WaveNet 恢复 QPSK 或 OFDMQPSK 目标信号，并对有真值的固定样本计算 MSE 和 BER。
+- **频谱检测与调制识别**：将宽带 IQ 转换为时频图，由 YOLO11n 检测信号位置，再提取对应 IQ，使用 XCiT 识别调制家族。
 
-- **任务一：混合信号分离与恢复**。选择目标信号、干扰类型和样本，使用 WaveNet 恢复目标信号，展示误码率（BER）、均方误差（MSE）和波形等结果。样本库包含六组，每组 50 个样本，共 300 个样本。
-- **任务二：频谱检测与调制识别**。选择宽带 IQ 测试样本，使用 YOLO11n 检测信号，再使用 XCiT 识别调制家族。样本库包含 100 个样本。页面可查看整体时频图、各信号局部图和家族识别结果。
+端侧发起请求，云侧选择并处理模型，Agent 接收模型，端侧校验、加载模型并推理，然后回传结果和图片。原始输入 IQ 默认留在端侧，不随任务请求上传。
 
-两个任务都由端侧发起请求，云侧选择并量化模型，Agent 接收模型，端侧校验和加载本次下发的模型完成推理，最后将结果回传云侧。端侧提交样本信息和本机路径引用，**不会上传输入 IQ 文件内容**。
-
-任务二的标准家族来自样本库标注。页面按检测框与标注框 IoU ≥ 0.5 进行一对一匹配，未匹配的检测不会显示标准家族。页面的样本库整体表现来自已完成的实验结果，与当前单次任务分别展示。
-
-## 二、目录和文件
-
-本机项目路径：`/home/lenovo/cloud-edge/spectrum-signal-edge`。
+## 项目结构
 
 ```text
 spectrum-signal-edge/
-├── frontend/live/                     # 端侧页面及整体实验数据
-├── frontend/runs/                     # 页面访问任务结果的链接
-├── backend/                       # 端侧服务、Agent、预处理、推理、BER 及 qmodel 解码
-├── spectrum-separation/
-│   ├── sample-library/            # 任务一样本及真值
-│   ├── interactions/              # 任务一运行记录与结果
-│   ├── pretrained-models/         # WaveNet 原始权重
-│   ├── src/wavenet_model/         # WaveNet 模型和配置
-│   ├── src/rfcutils/              # 信号生成和解调工具
-│   └── src/                       # 信号分离相关代码
-├── spectrum-recognition/
-│   ├── sample-library/            # 任务二样本和标注
-│   ├── interactions/              # 任务二运行记录与结果
-│   ├── models/                    # YOLO、XCiT 原始权重
-│   ├── src/xcit_model/            # XCiT 共用模型实现及许可
-│   ├── src/xcit_model/finetune_xcit_joint.py # XCiT 微调脚本
-│   ├── configs/                   # 频谱任务配置
-│   └── src/                       # 频谱分析相关代码
-├── received-models/               # 端侧校验后的下发模型副本
-├── all_results/                       # 样本库整体实验结果和实验脚本
-├── results.zip                    # 整体实验结果压缩包
-├── requirements-rf-spectrum.txt   # 频谱环境依赖参考
-├── requirements-rf-sionna.txt     # BER 环境依赖参考
-├── start.sh                       # 端侧服务启动脚本
-└── README.md                      # 本说明
+├── frontend/                 # 前端页面及结果链接
+├── backend/                  # 任务服务、Agent、预处理、推理和 BER
+├── spectrum-separation/      # 分离模型代码、样本和运行结果
+├── spectrum-recognition/     # 检测识别模型代码、样本和运行结果
+├── received-models/          # 校验后的下发模型副本
+├── all_results/              # 固定样本的整体实验资料
+├── requirements-rf-spectrum.txt
+├── requirements-rf-sionna.txt
+└── start.sh                  # 启动频谱后台和页面
 ```
 
-页面展示的整体实验数据位于 `frontend/live/experiment-data.json`。`all_results/` 是实验结果资料；单次在线任务的结果分别保存在两个任务的 `interactions/` 中。
+固定样本库位于各任务的 `sample-library/`：分离任务 300 个样本，识别任务 100 个样本。当前页面读取固定样本库，不能直接选择外部 `.dat` 或 `.pcm` 文件。
 
-## 三、环境与设备
+## 运行环境
 
-需要能够运行 Linux 或 WSL 的设备、浏览器、可访问云侧服务的网络，以及两个 Python 环境：
+本机使用两个 Conda 环境：
 
 | 环境 | 本机 Python | 用途 |
 |---|---|---|
-| `rf-spectrum` | `/home/lenovo/anaconda3/envs/rf-spectrum/bin/python`，Python 3.10 | 端侧服务、预处理和模型推理 |
-| `rf-sionna` | `/home/lenovo/anaconda3/envs/rf-sionna/bin/python`，Python 3.7 | 任务一 BER 计算 |
+| `rf-spectrum` | `/home/lenovo/anaconda3/envs/rf-spectrum/bin/python` | 后台、Agent、预处理和模型推理 |
+| `rf-sionna` | `/home/lenovo/anaconda3/envs/rf-sionna/bin/python` | 信号分离 BER 计算 |
 
-`requirements-rf-spectrum.txt` 和 `requirements-rf-sionna.txt` 记录依赖版本，可用于配置新环境。XCiT 模型实现位于 `spectrum-recognition/src/xcit_model`。依赖版本、CUDA 和 NVIDIA 驱动能否在目标设备上使用，需要按目标设备实际情况核对。
+依赖参考分别为 `requirements-rf-spectrum.txt`、`requirements-rf-sionna.txt`。迁移时需按目标设备检查 Python、GPU 驱动、CUDA 及依赖兼容性。当前模型包在端侧解码后加载为浮点权重，不应据此认定使用了原生 INT8 加速。
 
-`start.sh` 默认使用上表中的本机 Python 路径，并设置 XCiT 的 `PYTHONPATH`。迁移到其他设备时，请通过环境变量 `RF_SPECTRUM_PYTHON` 和 `RF_SIONNA_PYTHON` 指定新路径。推理在 PyTorch 可使用 CUDA 时使用 GPU，否则尝试 CPU。当前 qmodel 会被解码为浮点权重加载，不能据此认为使用了原生 INT8/INT4 推理加速。
+## 启动和连接云侧
 
-可在项目根目录检查两个环境的基础依赖：
+`start.sh` **只启动频谱后台和前端页面**。云侧服务、网络连接和 Agent 需要已运行；如果已有同编号公共 Agent 正在服务，应复用它，不要重复启动同编号 Agent。
+
+### 1. 检查云侧和 Agent
+
+本机网线环境可通过已有 SSH 隧道访问云侧，频谱后台默认云地址为 `http://127.0.0.1:18091`。确认云侧可访问：
+
+```bash
+curl --noproxy '*' http://127.0.0.1:18091/api/health
+```
+
+服务器服务只监听本机时，需要先在本机 WSL 中建立隧道；网线连接示例（保持终端运行）：
+
+```bash
+ssh -N -p 22 -o ExitOnForwardFailure=yes \
+  -L 127.0.0.1:18091:127.0.0.1:8091 flyvideo@192.168.50.1
+```
+
+如果 18091 已由有效的 SSH 隧道占用，直接复用即可。服务器网线 IP 和 SSH 端口应以现场实际配置为准。
+
+在云侧确认 `lenovo-wsl` 终端在线。若没有 Agent，可在另一个终端启动项目内 Agent：
 
 ```bash
 cd /home/lenovo/cloud-edge/spectrum-signal-edge
-export RF_SPECTRUM_PYTHON=/home/lenovo/anaconda3/envs/rf-spectrum/bin/python
-export RF_SIONNA_PYTHON=/home/lenovo/anaconda3/envs/rf-sionna/bin/python
-export PYTHONPATH="$PWD/spectrum-recognition/src${PYTHONPATH:+:$PYTHONPATH}"
-"$RF_SPECTRUM_PYTHON" -c 'import torch, numpy, cv2, ultralytics, torchsig, xcit_model, omegaconf; print("频谱环境可导入，CUDA:", torch.cuda.is_available())'
-"$RF_SIONNA_PYTHON" -c 'import numpy, tensorflow, sionna; print("Sionna 环境可导入")'
+/home/lenovo/anaconda3/envs/rf-spectrum/bin/python backend/edge_agent.py \
+  --cloud http://127.0.0.1:18091 \
+  --node-id lenovo-wsl \
+  --model-dir /home/lenovo/cloud-edge/model_repository
 ```
 
-导入检查只确认基础依赖可用。迁移后还应分别运行两个任务，检查模型接收、推理和结果回传。
+Agent 和后台使用的终端编号、模型目录必须一致。项目外也可能运行服务于其他任务的公共 Agent，请先检查，避免同编号 Agent 重复运行。
 
-## 四、连接云侧并启动
+### 2. 启动频谱页面
 
-本机当前使用的参数：
-
-| 项目 | 值 |
-|---|---|
-| 云服务器 SSH | `flyvideo@59.110.167.128`，端口 `6652` |
-| 云侧 HTTP 服务 | 服务器回环地址 `127.0.0.1:8091` |
-| 本机 SSH 隧道入口 | `http://127.0.0.1:18091` |
-| 终端设备编号 | `lenovo-wsl` |
-| Agent 模型接收目录 | `/home/lenovo/cloud-edge/model_repository` |
-| 端侧页面 | `http://127.0.0.1:8080/` |
-
-以下命令在本机 WSL/Linux 中执行。迁移时根据实际环境修改服务器地址、端口、Python 路径、设备编号和目录。
-
-### 1. 建立 SSH 隧道
-
-云侧服务需先在服务器 `127.0.0.1:8091` 监听。在本机终端运行并保持窗口打开：
+在本机 WSL 新开终端：
 
 ```bash
-ssh -N -p 6652 \
-  -o ExitOnForwardFailure=yes -o ServerAliveInterval=30 -o ServerAliveCountMax=3 \
-  -L 18091:127.0.0.1:8091 flyvideo@59.110.167.128
-```
-
-如果设备通过其他方式直接访问云侧 HTTP 服务，将下列 `RF_CLOUD_URL` 改为实际可访问的地址即可。
-
-### 2. 启动 Agent
-
-另开一个终端：
-
-```bash
-export RF_PROJECT=/home/lenovo/cloud-edge/spectrum-signal-edge
-export RF_SPECTRUM_PYTHON=/home/lenovo/anaconda3/envs/rf-spectrum/bin/python
-export RF_CLOUD_URL=http://127.0.0.1:18091
-export RF_NODE_ID=lenovo-wsl
-export RF_MODEL_ROOT=/home/lenovo/cloud-edge/model_repository
-
-"$RF_SPECTRUM_PYTHON" "$RF_PROJECT/backend/edge_agent.py" \
-  --cloud "$RF_CLOUD_URL" --check
-
-"$RF_SPECTRUM_PYTHON" "$RF_PROJECT/backend/edge_agent.py" \
-  --cloud "$RF_CLOUD_URL" --node-id "$RF_NODE_ID" --model-dir "$RF_MODEL_ROOT"
-```
-
-`--check` 只检查云侧连通性。Agent 启动后保持窗口运行；云侧控制台应显示对应终端在线。如果已有同一设备编号的 Agent 正在运行，请确认其云侧地址和模型接收目录一致，避免重复启动。
-
-### 3. 启动端侧页面与后台
-
-再开一个终端。注意环境变量只在当前终端生效：
-
-```bash
-export RF_PROJECT=/home/lenovo/cloud-edge/spectrum-signal-edge
-export RF_SPECTRUM_PYTHON=/home/lenovo/anaconda3/envs/rf-spectrum/bin/python
-export RF_SIONNA_PYTHON=/home/lenovo/anaconda3/envs/rf-sionna/bin/python
-export RF_CLOUD_URL=http://127.0.0.1:18091
-export RF_NODE_ID=lenovo-wsl
-export RF_MODEL_ROOT=/home/lenovo/cloud-edge/model_repository
-
-cd "$RF_PROJECT"
+cd /home/lenovo/cloud-edge/spectrum-signal-edge
 bash start.sh
 ```
 
-浏览器打开 `http://127.0.0.1:8080/`。端侧服务默认只监听本机回环地址；如 8080 已占用，可在启动前设置 `export RF_PORT=8081`，然后访问 `http://127.0.0.1:8081/`。
+浏览器打开 <http://127.0.0.1:8080/>。结束后台时，在启动它的终端按 `Ctrl+C`。脚本不负责停止 Agent 或 SSH 隧道。
 
-Agent 的 `--node-id` 必须与端侧 `RF_NODE_ID` 一致，Agent 的 `--model-dir` 必须与端侧 `RF_MODEL_ROOT` 指向同一目录。停止时，分别在端侧服务、Agent 和 SSH 隧道的终端按 `Ctrl+C`。
+需要修改参数时，可在启动前设置以下环境变量；Agent 必须使用相同的云地址、编号和模型目录：
 
-## 五、执行任务
-
-1. 确认云侧任务服务运行、所需模型已入库，且云侧控制台显示终端在线。
-2. 在云侧“终端任务请求”选择处理模式：**自动**模式下，后续新任务无需人工确认，云侧按场景默认配置处理；**手动**模式下，需在云侧确认任务并操作模型选择、量化和下发。模式设置对后续新收到的终端任务生效。
-3. 在端侧选择任务与测试样本，点击“发起请求”。任务一还需选择目标信号和干扰类型。
-4. 云侧处理并下发模型后，Agent 接收文件；端侧验证文件大小和 SHA-256，将量化模型复制到项目的 `received-models/`，加载本次模型并处理样本。
-5. 查看端侧“样本处理结果”。任务二可切换整体时频图和单个信号；任务一可切换波形和时频图。任务完成后，端侧会将 `result.json` 和结果图片回传云侧。
-
-单次任务的样本副本、模型输入、模型信息、日志和结果分别保存在：
-
-```text
-spectrum-separation/interactions/<任务ID>/
-spectrum-recognition/interactions/<任务ID>/
+```bash
+export RF_CLOUD_URL=http://127.0.0.1:18091
+export RF_NODE_ID=lenovo-wsl
+export RF_MODEL_ROOT=/home/lenovo/cloud-edge/model_repository
+export RF_PORT=8080
+export RF_SPECTRUM_PYTHON=/home/lenovo/anaconda3/envs/rf-spectrum/bin/python
+export RF_SIONNA_PYTHON=/home/lenovo/anaconda3/envs/rf-sionna/bin/python
+bash start.sh
 ```
 
-`frontend/runs/<任务ID>` 提供页面访问结果的链接。输入 IQ 和任务一恢复后的 IQ 保留在端侧。
+## 使用流程
 
-## 六、清理已下发模型
+1. 确认云侧服务、网络和相同终端编号的 Agent 在线。
+2. 打开端侧页面，选择任务和测试样本；信号分离还需选择目标信号和干扰类型。
+3. 发起请求。云侧自动或手动选择模型并下发，具体由云侧当前模式决定。
+4. 端侧校验并加载本次模型，处理样本，显示结果并回传结果 JSON 与图片。
 
-端侧切换到要清理的任务，在“云边协同处理”中点击“清理本任务模型”。页面会显示可清理的文件数量和大小，确认后删除能由本地任务记录识别的 qmodel，包括 Agent 接收目录中的文件和项目内的推理副本。
+单次任务记录位于 `spectrum-separation/interactions/<任务ID>/` 或 `spectrum-recognition/interactions/<任务ID>/`；前端通过 `frontend/runs/` 中的链接访问结果。模型接收位置由 `RF_MODEL_ROOT` 配置，校验后的副本在 `received-models/`。页面整体实验数据位于 `frontend/live/experiment-data.json`，相关实验资料位于 `all_results/`。
 
-任务运行时不能清理。该功能保留样本、处理结果、原始权重及其他业务模型；没有对应接收记录或校验不通过的文件会保留。清理后发起新任务时，Agent 会按云侧下发的任务重新接收模型。
+云侧协议中的任务标识分别为 `signal-separation`、`spectrum-analysis`，与本地目录名不同，不要仅因目录改名而修改协议值。
 
-## 七、常见问题
+## 常见检查
 
-- **云侧连接失败**：检查云侧服务、SSH 隧道和 `RF_CLOUD_URL`，并使用 Agent 的 `--check` 检查连通性。
-- **Agent 不在线或模型未收到**：检查设备编号、云侧地址和模型接收目录是否与端侧服务一致，并查看云侧任务和下发状态。
-- **模型校验或加载失败**：查看对应任务的 `model-info.json` 和 `worker.log`，确认云侧下发的 qmodel 包含当前任务所需模型。项目内原始权重不会自动替代未下发的模型。
-- **任务一 BER 计算失败**：检查 `RF_SIONNA_PYTHON` 是否指向可用的 `rf-sionna` 环境，并查看任务日志。
-- **样本或模型输入校验失败**：检查样本文件是否完整及依赖环境是否匹配；不要直接修改样本清单中的哈希。
-- **页面显示旧内容**：刷新浏览器；修改端侧 Python 服务后需要重启端侧服务。
+- **页面打不开**：检查 `bash start.sh` 是否运行、8080 端口是否被占用；也可通过 `RF_PORT` 设置其他端口。
+- **云侧未连接**：检查云侧健康接口、SSH 隧道和 Agent 心跳。
+- **无法接收模型**：检查 Agent 编号及模型目录是否与后台一致，并查看 Agent 日志。
+- **信号分离 BER 失败**：检查 `rf-sionna` 环境及样本真值。
+- **迁移到新设备**：`.gitignore` 排除固定样本、运行记录和部分实验明细；仅克隆仓库可能不足以运行，需另行准备这些文件和模型。
 
-云端任务标识仍使用 `signal-separation` 和 `spectrum-analysis`，与本地目录名分别为 `spectrum-separation` 和 `spectrum-recognition`。
+- **端口号被占用**sudo lsof -iTCP:8080 -sTCP:LISTEN -nP查询占用该端口号的进程，然后kill相应的PID即可。
